@@ -5,17 +5,17 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'evideo/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'evideo'
-  spec.version       = Evideo::VERSION
-  spec.authors       = ['Hernâni Rodrigues Vaz']
-  spec.email         = ['hernanirvaz@gmail.com']
-  spec.homepage      = 'https://github.com/hernanilr/evideo'
-  spec.license       = 'MIT'
+  spec.name        = 'evideo'
+  spec.version     = Evideo::VERSION
+  spec.authors     = ['Hernâni Rodrigues Vaz']
+  spec.email       = ['hernanirvaz@gmail.com']
+  spec.homepage    = 'https://github.com/hernanilr/evideo'
+  spec.license     = 'MIT'
 
-  spec.summary       = 'Processa ficheiros video para arquivo'
-  spec.description   = spec.summary
-  spec.description  += ' Pode alterar bitrate, framerate, height,' \
-                       ' aspect ratio e elimina metadata'
+  spec.summary     = 'Processa ficheiros video.'
+  spec.description = spec.summary +
+                     ' Pode alterar bitrate, framerate, height,' \
+                     ' aspect ratio e elimina metadata.'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['yard.run'] = 'yard'
@@ -34,5 +34,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 1.17'
   spec.add_development_dependency 'rake', '~> 10.0'
 
-  spec.add_dependency 'thor'
+  spec.add_dependency 'thor', '~> 0.1'
 end

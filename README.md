@@ -1,28 +1,23 @@
 # Evideo
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/evideo`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Processa ficheiros video. Pode alterar bitrate, framerate, height, aspect ratio e elimina metadata.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'evideo'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install evideo
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ ev conv  # converte videos
+    $ ev test  # testa videos
+
+    Options:
+      [-d=DIR] # Onde procurar videos
+               # Default: ["/home/eu/lust", "/media/eu/hrv2"]
+      [-i=IN]  # Pasta origem
+               # Default: ftv
+      [-o=OUT] # Pasta destino
+               # Default: out
 
 ## Development
 
