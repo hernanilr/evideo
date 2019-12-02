@@ -21,15 +21,15 @@ module Evideo
     # Processa videos
     def conv
       dar = options[:d]
-      Dir.glob("#{dar[0]}/#{options[:i]}/*.???").sort.each do |f|
-        HRVideo.new(f).processa(dar, dar[0], options[:o])
+      Dir.glob("#{dar.first}/#{options[:i]}/*.???").sort.each do |f|
+        HRVideo.new(f).processa(dar, dar.first, options[:o])
       end
     end
 
     desc 'test', 'testa videos'
     # Analisa videos
     def test
-      Dir.glob("#{options[:d][0]}/#{options[:i]}/*.???").sort.each do |f|
+      Dir.glob("#{options[:d].first}/#{options[:i]}/*.???").sort.each do |f|
         p HRVideo.new(f).testa
       end
     end

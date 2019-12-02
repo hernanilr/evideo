@@ -29,7 +29,7 @@ module Evideo
     # @return [true, false] sim ou nao <local>/<video> esta ok
     def vdok?(ary, out)
       if ary.empty? then false
-      elsif vfok?(HRVideo.new("#{ary[0]}/#{out}/#{base}.mp4")) then true
+      elsif vfok?(HRVideo.new("#{ary.first}/#{out}/#{base}.mp4")) then true
       else  vdok?(ary.drop(1), out)
       end
     end
