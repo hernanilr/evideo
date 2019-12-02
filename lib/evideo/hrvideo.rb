@@ -135,7 +135,7 @@ module Evideo
                 Time.parse(duration) < Time.parse('00:01:00') ||
                 vdok?(dar, out)
 
-      system mpeg + " #{din}/#{out}/#{base}.mp4"
+      p mpeg + " #{din}/#{out}/#{base}.mp4"
       vfok?(HRVideo.new("#{din}/#{out}/#{base}.mp4"))
     end
   end
