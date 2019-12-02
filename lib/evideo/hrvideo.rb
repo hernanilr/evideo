@@ -100,7 +100,7 @@ module Evideo
       ' -metadata title= -metadata artist= -metadata comment=' \
         ' -metadata major_brand= -metadata compatible_brands=' +
         # para teste produz somente segundos
-        # ' -t 20' \
+        ' -t 20' \
         ''
     end
 
@@ -135,7 +135,7 @@ module Evideo
                 Time.parse(duration) < Time.parse('00:01:00') ||
                 vdok?(dar, out)
 
-      p mpeg + " #{din}/#{out}/#{base}.mp4"
+      system mpeg + " #{din}/#{out}/#{base}.mp4"
       vfok?(HRVideo.new("#{din}/#{out}/#{base}.mp4"))
     end
   end
