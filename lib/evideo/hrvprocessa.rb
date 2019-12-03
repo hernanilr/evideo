@@ -5,24 +5,38 @@ require 'time'
 module Evideo
   # permite analizar/processar videos para arquivo
   class HRVideo < String
-    # Testa validade video
+    # @return [String] tempo: rate:
+    def show
+      return video unless @probe
+
+      "tempo: #{duration} rate: #{bitrate}"
+    end
+
+    # Testa validade video original
     #
-    # @param [String] file video a testar validade
     # @return [true, false] sim ou nao video esta ok
-    def vfok?(file)
-      return false unless File.exist?(file.video)
+    def ofok?
+      return false unless (bitrate < 3000 && ext == '.mp4') ||
+                          Time.parse(duration) < Time.parse('00:01:00')
 
-      # tempo video processado < tempo original -60 segundos ou
-      # bitrate video processado > bitrate video origunal
-      return false unless Time.parse(file.duration) >
-                          Time.parse(duration) - 60 &&
-                          file.bitrate < 3000
-
-      puts "rm #{video} # #{file.rm_show}"
+      puts "rm \"#{video}\" # #{show}"
       true
     end
 
-    # Testa validade <locais>/<video>
+    # Testa validade video processado contra video original
+    #
+    # @param [String] file video processado a testar validade
+    # @return [true, false] sim ou nao video esta ok
+    def vfok?(file)
+      return false unless File.exist?(file.video) &&
+                          file.bitrate < 3000 &&
+                          Time.parse(file.duration) > Time.parse(duration) - 60
+
+      puts "rm \"#{video}\" # #{file.video} #{file.show}"
+      true
+    end
+
+    # Testa validade videos processados em todos locais contra video original
     #
     # @param [Array<String>] ary array locais onde procurar videos
     # @param [String] out pasta destino dos videos
@@ -42,17 +56,8 @@ module Evideo
         ''
     end
 
-    # @return [String] metadata comando conversao
-    def metadata
-      ' -metadata title= -metadata artist= -metadata comment=' \
-        ' -metadata major_brand= -metadata compatible_brands=' +
-        # para teste produz somente segundos
-        # ' -t 20' \
-        ''
-    end
-
     # @return [String] aspect ratio comando conversao
-    def aspect_ratio
+    def aspect
       if ratio == '0:1' then bitrate < 720 ? '' : ' -aspect 16:9'
       else                   " -aspect #{ratio}"
       end
@@ -73,39 +78,37 @@ module Evideo
 
     # @return [String] comando conversao
     def mpeg
-      "ffmpeg #{geral} -i #{video} -y -an " +
+      "ffmpeg #{geral} -i \"#{video}\" -y -an " +
         # framerate & bitrate
         "-r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" +
-        dimension + aspect_ratio + metadata
+        dimension + aspect +
+        ' -metadata title= -metadata artist= -metadata comment=' \
+        ' -metadata major_brand= -metadata compatible_brands=' +
+        # para teste produz somente segundos
+        # ' -t 20' \
+        ''
     end
 
-    # Processa video
+    # Processa videos
     #
     # @param [Array<String>] dar locais onde procurar videos
-    # @param [String] din pasta origem dos videos
     # @param [String] out pasta destino dos videos
-    def processa(dar, din, out)
-      return if (bitrate < 3000 && ext == '.mp4') ||
-                Time.parse(duration) < Time.parse('00:01:00') ||
-                vdok?(dar, out)
+    # @param [String] din pasta origem dos videos
+    def processa(dar, out, din)
+      return if ofok? || vdok?(dar, out)
 
       system mpeg + " #{din}/#{out}/#{base}.mp4"
       vfok?(HRVideo.new("#{din}/#{out}/#{base}.mp4"))
     end
 
-    # @return [String] video: tempo: rate:
-    def rm_show
-      return video unless @probe
+    # Testa videos
+    #
+    # @param [Array<String>] dar locais onde procurar videos
+    # @param [String] out pasta destino dos videos
+    def testa(dar, out)
+      return if ofok? || vdok?(dar, out)
 
-      "#{video} tempo: #{duration} rate: #{bitrate} "
-    end
-
-    # @return [String] video: tempo: rate: y: framerate: ratio:
-    def testa
-      return video unless @probe
-
-      "#{base}#{ext} tempo: #{duration} rate: #{bitrate} " \
-        "y: #{height} framerate: #{fps} ratio: #{ratio}"
+      puts "ls \"#{video}\" # #{show}"
     end
   end
 end

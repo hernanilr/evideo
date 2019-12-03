@@ -31,18 +31,18 @@ module Evideo
       @probe = `#{probe}` if File.exist?(fvideo)
       return unless @probe
 
-      r1 = @probe.scan(R1).flatten
-      @duration = r1[0]
-      @bitrate = r1[1].to_i
+      tr1 = @probe.scan(R1).flatten
+      @duration = tr1[0]
+      @bitrate = tr1[1].to_i
     end
 
     # Parametrizar height e frame rate
     def r2
       return unless @probe
 
-      r2 = @probe.scan(R2).flatten
-      @height = r2[0].to_i
-      @fps = r2[1].to_f
+      tr2 = @probe.scan(R2).flatten
+      @height = tr2[0].to_i
+      @fps = tr2[1].to_f
     end
 
     # Parametrizar aspect ratio
