@@ -18,22 +18,33 @@ module Evideo
     desc 'conv', 'converte videos'
     option :o, banner: 'OUT', default: 'out',
                desc: 'Pasta destino'
+    option :t, type: :boolean, default: false,
+               desc: 'Processa somente segundos para teste'
     # Processa videos
     def conv
-      dar = options[:d]
-      Dir.glob("#{dar.first}/#{options[:i]}/*.???").sort.each do |f|
-        HRVideo.new(f).processa(dar, options[:o], dar.first)
+      Dir.glob("#{fin}/*.???").sort.each do |f|
+        HRVideo.new(f).processa(options, fout)
       end
     end
 
     desc 'test', 'testa videos'
     # Analisa videos
     def test
-      dar = options[:d]
-      Dir.glob("#{dar.first}/#{options[:i]}/*.???").sort.each do |f|
-        HRVideo.new(f).testa(dar, options[:o])
+      Dir.glob("#{fin}/*.???").sort.each do |f|
+        HRVideo.new(f).testa(options)
       end
     end
     default_task :conv
+    no_commands do
+      # @return [String] pasta absoluta origem dos videos
+      def fin
+        "#{options[:d].first}/#{options[:i]}"
+      end
+
+      # @return [String] pasta absoluta destino dos videos
+      def fout
+        "#{options[:d].first}/#{options[:o]}"
+      end
+    end
   end
 end

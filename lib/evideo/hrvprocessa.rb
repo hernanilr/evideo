@@ -9,7 +9,7 @@ module Evideo
     def show
       return video unless @probe
 
-      "tempo: #{duration} rate: #{bitrate}"
+      "tempo: #{duration} rate: #{bitrate} ratio: #{ratio} height: #{height}"
     end
 
     # Testa validade video original
@@ -18,6 +18,7 @@ module Evideo
     def ofok?
       return false unless (bitrate < 3000 && ext == '.mp4') ||
                           Time.parse(duration) < Time.parse('00:01:00')
+      return false unless ratio == '16:9' && height > 480
 
       puts "rm \"#{video}\" # #{show}"
       true
@@ -58,16 +59,16 @@ module Evideo
 
     # @return [String] aspect ratio comando conversao
     def aspect
-      if ratio == '0:1' then bitrate < 720 ? '' : ' -aspect 16:9'
+      if ratio == '0:1' then height < 720 ? '' : ' -aspect 16:9'
       else                   " -aspect #{ratio}"
       end
     end
 
     # @return [String] video dimensions comando conversao
     def dimension
-      if    bitrate <  480 then ' -s hd480'
-      elsif bitrate <= 720 then ' -s hd720'
-      else                      ' -s hd1080'
+      if    height <  480 then ' -s hd480'
+      elsif height <= 720 then ' -s hd720'
+      else                     ' -s hd1080'
       end
     end
 
@@ -76,8 +77,11 @@ module Evideo
       "ffprobe -hide_banner -show_streams \"#{video}\" 2>&1|grep -v title"
     end
 
+    # Comando para processar videos
+    #
+    # @param [String] tempo do video processato
     # @return [String] comando conversao
-    def mpeg
+    def mpeg(tempo)
       "ffmpeg #{geral} -i \"#{video}\" -y -an " +
         # framerate & bitrate
         "-r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" +
@@ -85,28 +89,33 @@ module Evideo
         ' -metadata title= -metadata artist= -metadata comment=' \
         ' -metadata major_brand= -metadata compatible_brands=' +
         # para teste produz somente segundos
-        # ' -t 20' \
-        ''
+        tempo
     end
 
     # Processa videos
     #
-    # @param [Array<String>] dar locais onde procurar videos
-    # @param [String] out pasta destino dos videos
-    # @param [String] din pasta origem dos videos
-    def processa(dar, out, din)
-      return if ofok? || vdok?(dar, out)
+    # @param [Hash] opcoes parametrizacao
+    # @option opcoes [Array<String>] :d locais onde procurar videos
+    # @option opcoes [<String>] :i pasta origem dos videos
+    # @option opcoes [<String>] :o pasta destino dos videos
+    # @option opcoes [<Boolean>] :t processa somente segundos para teste
+    # @param [String] out pasta destino dos videos absoluta
+    def processa(opcoes, out)
+      return if ofok? || vdok?(opcoes[:d], opcoes[:o])
 
-      system mpeg + " #{din}/#{out}/#{base}.mp4"
-      vfok?(HRVideo.new("#{din}/#{out}/#{base}.mp4"))
+      system mpeg(opcoes[:t] ? ' -t 20' : '') + " #{out}/#{base}.mp4"
+      vfok?(HRVideo.new("#{out}/#{base}.mp4"))
     end
 
     # Testa videos
     #
-    # @param [Array<String>] dar locais onde procurar videos
-    # @param [String] out pasta destino dos videos
-    def testa(dar, out)
-      return if ofok? || vdok?(dar, out)
+    # @param [Hash] opcoes parametrizacao
+    # @option opcoes [Array<String>] :d locais onde procurar videos
+    # @option opcoes [<String>] :i pasta origem dos videos
+    # @option opcoes [<String>] :o pasta destino dos videos
+    # @option opcoes [<Boolean>] :t processa somente segundos para teste
+    def testa(opcoes)
+      return if ofok? || vdok?(opcoes[:d], opcoes[:o])
 
       puts "ls \"#{video}\" # #{show}"
     end
