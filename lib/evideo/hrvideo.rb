@@ -32,7 +32,7 @@ module Evideo
       return unless @probe
 
       tr1 = @probe.scan(R1).flatten
-      @duration = tr1[0]
+      @duration = tr1[0].to_s
       @bitrate = tr1[1].to_i
     end
 
