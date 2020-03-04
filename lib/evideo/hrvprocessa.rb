@@ -14,13 +14,14 @@ module Evideo
 
     # Testa validade video original
     #
+    # @param [String] aot pasta destino dos videos absoluta
     # @return [true, false] sim ou nao video esta ok
-    def ofok?
+    def ofok?(aot)
       return false unless (bitrate < 3000 && ext == '.mp4') ||
                           Time.parse(duration) < Time.parse('00:01:00')
       return false unless ratio == '16:9' && height > 480
 
-      puts "rm \"#{video}\" # #{show}"
+      puts "mv \"#{video} #{aot}/#{base}.mp4\" # #{show}"
       true
     end
 
@@ -40,12 +41,12 @@ module Evideo
     # Testa validade videos processados em todos locais contra video original
     #
     # @param [Array<String>] ary array locais onde procurar videos
-    # @param [String] out pasta destino dos videos
+    # @param [String] pot pasta destino dos videos
     # @return [true, false] sim ou nao <local>/<video> esta ok
-    def vdok?(ary, out)
+    def vdok?(ary, pot)
       if ary.empty? then false
-      elsif vfok?(HRVideo.new("#{ary.first}/#{out}/#{base}.mp4")) then true
-      else  vdok?(ary.drop(1), out)
+      elsif vfok?(HRVideo.new("#{ary.first}/#{pot}/#{base}.mp4")) then true
+      else  vdok?(ary.drop(1), pot)
       end
     end
 
@@ -99,12 +100,12 @@ module Evideo
     # @option opcoes [<String>] :i pasta origem dos videos
     # @option opcoes [<String>] :o pasta destino dos videos
     # @option opcoes [<Boolean>] :t processa somente segundos para teste
-    # @param [String] out pasta destino dos videos absoluta
-    def processa(opcoes, out)
-      return if ofok? || vdok?(opcoes[:d], opcoes[:o])
+    # @param [String] aot pasta destino dos videos absoluta
+    def processa(opcoes, aot)
+      return if ofok?(aot) || vdok?(opcoes[:d], opcoes[:o])
 
-      system mpeg(opcoes[:t] ? ' -t 20' : '') + " #{out}/#{base}.mp4"
-      vfok?(HRVideo.new("#{out}/#{base}.mp4"))
+      system mpeg(opcoes[:t] ? ' -t 20' : '') + " #{aot}/#{base}.mp4"
+      vfok?(HRVideo.new("#{aot}/#{base}.mp4"))
     end
 
     # Testa videos
@@ -114,8 +115,9 @@ module Evideo
     # @option opcoes [<String>] :i pasta origem dos videos
     # @option opcoes [<String>] :o pasta destino dos videos
     # @option opcoes [<Boolean>] :t processa somente segundos para teste
-    def testa(opcoes)
-      return if ofok? || vdok?(opcoes[:d], opcoes[:o])
+    # @param [String] aot pasta destino dos videos absoluta
+    def testa(opcoes, aot)
+      return if ofok?(aot) || vdok?(opcoes[:d], opcoes[:o])
 
       puts "ls \"#{video}\" # #{show}"
     end

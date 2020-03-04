@@ -15,9 +15,9 @@ module Evideo
                      desc: 'Onde procurar videos'
     class_option :i, banner: 'IN', default: 'ftv',
                      desc: 'Pasta origem'
+    class_option :o, banner: 'OUT', default: 'out',
+                     desc: 'Pasta destino'
     desc 'conv', 'converte videos'
-    option :o, banner: 'OUT', default: 'out',
-               desc: 'Pasta destino'
     option :t, type: :boolean, default: false,
                desc: 'Processa somente segundos para teste'
     # Processa videos
@@ -31,7 +31,7 @@ module Evideo
     # Analisa videos
     def test
       Dir.glob("#{fin}/*.???").sort.each do |f|
-        HRVideo.new(f).testa(options)
+        HRVideo.new(f).testa(options, fout)
       end
     end
     default_task :conv
