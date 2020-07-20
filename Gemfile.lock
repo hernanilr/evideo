@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    evideo (0.2.1)
+    evideo (0.2.2)
       thor
 
 GEM
