@@ -13,6 +13,8 @@ module Evideo
     attr_reader :duration
     # @return [String] bitrate do ficheiro video
     attr_reader :bitrate
+    # @return [String] frequencia audio do ficheiro video
+    attr_reader :audio
 
     # Duration: 01:01:08.50, start: 0.000000, bitrate: 2228 kb/s
     R1 = /duration:\s+(\d\d:\d\d:\d\d).*bitrate:\s+(\d+)\s+kb/i.freeze
@@ -21,6 +23,9 @@ module Evideo
     R2 = /stream.*video:.*x\s*(\d+).*\s+(\d+\.*\d*)\s+fps/i.freeze
     # display_aspect_ratio=16:9
     R3 = /display_aspect_ratio\s*=\s*(\d+:\d+)$/i.freeze
+    # Stream #0:1(eng): Audio: aac (LC), 48000 Hz, stereo, fltp (default)
+    # Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 127 kb/s (default)
+    R4 = /stream.*audio:.*\s+(\d+)\s+hz/i.freeze
 
     def initialize(fvideo)
       @video = fvideo
@@ -28,7 +33,7 @@ module Evideo
       @base = File.basename(fvideo, @ext).downcase
       @duration = '00:00:00'
       @bitrate = 0
-      @probe = `#{probe}` if File.exist?(fvideo)
+      @probe = `#{cmd_probe}` if File.exist?(fvideo)
       return unless @probe
 
       tr1 = @probe.scan(R1).flatten
@@ -50,6 +55,20 @@ module Evideo
       return unless @probe
 
       @ratio = @probe.scan(R3).flatten[0]
+    end
+
+    # Parametrizar audio
+    def r4
+      return unless @probe
+
+      @audio = @probe.scan(R4).flatten[0].to_i
+    end
+
+    # @return [String] audio
+    def audio
+      r4 unless @audio
+
+      @audio
     end
 
     # @return [String] height

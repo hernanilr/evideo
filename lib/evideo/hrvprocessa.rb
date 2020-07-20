@@ -17,9 +17,9 @@ module Evideo
     # @param [String] aot pasta destino dos videos absoluta
     # @return [true, false] sim ou nao video esta ok
     def ofok?(aot)
-      return false unless (bitrate < 3000 && ext == '.mp4') ||
-                          Time.parse(duration) < Time.parse('00:01:00')
+      return false unless (bitrate < 3000 && ext == '.mp4') || Time.parse(duration) < Time.parse('00:01:00')
       return false unless ratio == '16:9' && height > 480
+      return false unless audio == 0
 
       puts "mv \"#{video} #{aot}/#{base}.mp4\" # #{show}"
       true
@@ -31,8 +31,7 @@ module Evideo
     # @return [true, false] sim ou nao video esta ok
     def vfok?(file)
       return false unless File.exist?(file.video) &&
-                          file.bitrate < 3000 &&
-                          Time.parse(file.duration) > Time.parse(duration) - 60
+                          file.bitrate < 3000  && Time.parse(file.duration) > Time.parse(duration) - 60
 
       puts "rm \"#{video}\" # #{file.video} #{file.show}"
       true
@@ -48,14 +47,6 @@ module Evideo
       elsif vfok?(HRVideo.new("#{ary.first}/#{pot}/#{base}.mp4")) then true
       else  vdok?(ary.drop(1), pot)
       end
-    end
-
-    # @return [String] opcoes gerais comando conversao
-    def geral
-      '-loglevel quiet -hide_banner' +
-        # para ignorar segundos no inicio
-        # ' -ss 15' \
-        ''
     end
 
     # @return [String] aspect ratio comando conversao
@@ -74,15 +65,16 @@ module Evideo
     end
 
     # @return [String] comando analise
-    def probe
+    def cmd_probe
       "ffprobe -hide_banner -show_streams \"#{video}\" 2>&1|grep -v title"
     end
 
     # Comando para processar videos
     #
-    # @param [String] tempo do video processato
+    # @param [String] tempo do video processado
     # @return [String] comando conversao
-    def mpeg(tempo)
+    def cmd_mpeg(tempo)
+      puts "processar #{base}.mp4 -r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" + dimension + aspect + tempo
       "ffmpeg #{geral} -i \"#{video}\" -y -an " +
         # framerate & bitrate
         "-r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" +
@@ -91,6 +83,14 @@ module Evideo
         ' -metadata major_brand= -metadata compatible_brands=' +
         # para teste produz somente segundos
         tempo
+    end
+
+    # @return [String] opcoes gerais comando conversao
+    def geral
+      '-loglevel quiet -hide_banner' +
+        # para ignorar segundos no inicio
+        # ' -ss 15' \
+        ''
     end
 
     # Processa videos
@@ -104,7 +104,7 @@ module Evideo
     def processa(opcoes, aot)
       return if ofok?(aot) || vdok?(opcoes[:d], opcoes[:o])
 
-      system mpeg(opcoes[:t] ? ' -t 20' : '') + " #{aot}/#{base}.mp4"
+      system cmd_mpeg(opcoes[:t] ? ' -t 20' : '') + " #{aot}/#{base}.mp4"
       vfok?(HRVideo.new("#{aot}/#{base}.mp4"))
     end
 
