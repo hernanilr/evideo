@@ -2,19 +2,17 @@
 
 module Evideo
   # permite analizar string output do comando sonda video
-  class HRVideo < String
+  class HRVideo
     # @return [String] nome do ficheiro video
-    attr_reader :video
+    attr_reader :nome
     # @return [String] extensao do ficheiro video
     attr_reader :ext
     # @return [String] base do ficheiro video
     attr_reader :base
     # @return [String] duracao do ficheiro video
-    attr_reader :duration
+    attr_reader :tempo
     # @return [String] bitrate do ficheiro video
     attr_reader :bitrate
-    # @return [String] frequencia audio do ficheiro video
-    attr_reader :audio
 
     # Duration: 01:01:08.50, start: 0.000000, bitrate: 2228 kb/s
     R1 = /duration:\s+(\d\d:\d\d:\d\d).*bitrate:\s+(\d+)\s+kb/i.freeze
@@ -27,17 +25,17 @@ module Evideo
     # Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 127 kb/s (default)
     R4 = /stream.*audio:.*\s+(\d+)\s+hz/i.freeze
 
-    def initialize(fvideo)
-      @video = fvideo
-      @ext = File.extname(fvideo)
-      @base = File.basename(fvideo, @ext).downcase
-      @duration = '00:00:00'
+    def initialize(fil)
+      @nome = fil
+      @ext = File.extname(fil)
+      @base = File.basename(fil, @ext).downcase
+      @tempo = '00:00:00'
       @bitrate = 0
-      @probe = `#{cmd_probe}` if File.exist?(fvideo)
+      @probe = `#{cmd_probe}` if File.exist?(fil)
       return unless @probe
 
       tr1 = @probe.scan(R1).flatten
-      @duration = tr1[0].to_s
+      @tempo = tr1[0].to_s
       @bitrate = tr1[1].to_i
     end
 

@@ -4,36 +4,41 @@ require 'time'
 
 module Evideo
   # permite analizar/processar videos para arquivo
-  class HRVideo < String
+  class HRVideo
     # @return [String] tempo: rate:
     def show
-      return video unless @probe
+      return nome unless @probe
 
-      "tempo: #{duration} rate: #{bitrate} ratio: #{ratio} height: #{height}"
+      "tempo: #{tempo} rate: #{bitrate} ratio: #{ratio} height: #{height}"
     end
 
     # Testa validade video original
     #
     # @param [String] aot pasta destino dos videos absoluta
-    # @return [true, false] sim ou nao video esta ok
+    # @return [true, false] sim ou nao video original esta ok
     def ofok?(aot)
-      return false unless (bitrate < 3000 && ext == '.mp4') || Time.parse(duration) < Time.parse('00:01:00')
-      return false unless ratio == '16:9' && height > 480
-      return false unless audio == 0
+      return false unless processa_of?
 
-      puts "mv \"#{video} #{aot}/#{base}.mp4\" # #{show}"
+      puts "mv \"#{nome} #{aot}/#{base}.mp4\" # #{show}"
       true
+    end
+
+    # @return [true, false] video original precisa ser processado?
+    def processa_of?
+      # prossecar somente videos grandes (>1 min) ou extensao errada ou bitrate >= 3000
+      ((bitrate < 3000 && ext == '.mp4') || Time.parse(tempo) < Time.parse('00:01:00')) &&
+        # prossecar somente videos com ratio, height, audio errados
+        ratio == '16:9' && height > 480 && audio.zero?
     end
 
     # Testa validade video processado contra video original
     #
-    # @param [String] file video processado a testar validade
+    # @param [String] hrv video processado a testar validade
     # @return [true, false] sim ou nao video esta ok
-    def vfok?(file)
-      return false unless File.exist?(file.video) &&
-                          file.bitrate < 3000  && Time.parse(file.duration) > Time.parse(duration) - 60
+    def vfok?(hrv)
+      return false unless File.exist?(hrv.nome) && hrv.bitrate < 3000 && Time.parse(hrv.tempo) > Time.parse(tempo) - 60
 
-      puts "rm \"#{video}\" # #{file.video} #{file.show}"
+      puts "rm \"#{nome}\" # #{hrv.nome} #{hrv.show}"
       true
     end
 
@@ -52,7 +57,7 @@ module Evideo
     # @return [String] aspect ratio comando conversao
     def aspect
       if ratio == '0:1' then height < 720 ? '' : ' -aspect 16:9'
-      else                   " -aspect #{ratio}"
+      else " -aspect #{ratio}"
       end
     end
 
@@ -66,7 +71,7 @@ module Evideo
 
     # @return [String] comando analise
     def cmd_probe
-      "ffprobe -hide_banner -show_streams \"#{video}\" 2>&1|grep -v title"
+      "ffprobe -hide_banner -show_streams \"#{nome}\" 2>&1|grep -v title"
     end
 
     # Comando para processar videos
@@ -74,15 +79,16 @@ module Evideo
     # @param [String] tempo do video processado
     # @return [String] comando conversao
     def cmd_mpeg(tempo)
-      puts "processar #{base}.mp4 -r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" + dimension + aspect + tempo
-      "ffmpeg #{geral} -i \"#{video}\" -y -an " +
-        # framerate & bitrate
-        "-r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" +
-        dimension + aspect +
-        ' -metadata title= -metadata artist= -metadata comment=' \
-        ' -metadata major_brand= -metadata compatible_brands=' +
+      puts "processar #{base}.mp4 " + join_opcoes
+      "ffmpeg #{geral} -i \"#{nome}\" -y -an " + join_opcoes +
+        ' -metadata title= -metadata artist= -metadata comment= -metadata major_brand= -metadata compatible_brands=' +
         # para teste produz somente segundos
         tempo
+    end
+
+    # @return [String] opcoes para trabalho framerate & bitrate & dimenssoes
+    def join_opcoes
+      "-r #{[fps, 25].min} -b:v #{[bitrate, 2000].min}k" + dimension + aspect
     end
 
     # @return [String] opcoes gerais comando conversao
@@ -119,7 +125,7 @@ module Evideo
     def testa(opcoes, aot)
       return if ofok?(aot) || vdok?(opcoes[:d], opcoes[:o])
 
-      puts "ls \"#{video}\" # #{show}"
+      puts "ls -lh \"#{nome}\" # #{show}"
     end
   end
 end
