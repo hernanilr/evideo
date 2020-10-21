@@ -8,16 +8,16 @@ Processa ficheiros video. Pode alterar bitrate, framerate, height, aspect ratio 
 
 ## Usage
 
-    $ ev conv  # converte videos
-    $ ev test  # testa videos
+    $ ev conv       # converte videos
+    $ ev test       # testa videos
 
-    Options:
-      [-d=DIR] # Onde procurar videos
-               # Default: ["/home/eu/lust", "/media/eu/hrv2"]
-      [-i=IN]  # Pasta origem
-               # Default: ftv
-      [-o=OUT] # Pasta destino
-               # Default: out
+    opcoes:
+    [-d=DIR]        # Onde procurar videos                       defeito: ["/home/eu/lust", "/media/eu/hrv2", "/media/eu/hrv2/lust"]
+    [-i=IN]         # Pasta inicial                              defeito: ftv
+    [-o=OUT]        # Pasta final                                defeito: out
+    [-x], [--no-x]  # executa/mostra comando converte videos
+    [-s=N]          # Segundos cortados no inicio do video final defeito: 0=sem cortes
+    [-t=N]          # Segundos duracao video final               defeito: 0=sem cortes
 
 ## Development
 
@@ -27,7 +27,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/evideo.
+Bug reports and pull requests are welcome on GitHub at https://github.com/hernanilr/evideo.
 
 ## License
 

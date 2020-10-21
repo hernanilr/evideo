@@ -1,45 +1,49 @@
 # frozen_string_literal: true
 
 require 'thor'
+require 'evideo/vars1'
+require 'evideo/vars2'
+require 'evideo/processa'
 require 'evideo/version'
-require 'evideo/hrvideo'
-require 'evideo/hrvprocessa'
 
+# (see Evideo)
 module Evideo
-  class Error < StandardError; end
-  ID = `whoami`.chomp
+  who = `whoami`.chomp
+  ADI = ["/home/#{who}/lust", "/media/#{who}/hrv2", "/media/#{who}/hrv2/lust"].freeze
+
   # CLI para analisar/processar videos
   class CLI < Thor
-    class_option :d, banner: 'DIR', type: :array, desc: 'Onde procurar videos',
-                     default: ["/home/#{ID}/lust", "/media/#{ID}/hrv2"]
-    class_option :i, banner: 'IN',  default: 'ftv', desc: 'Pasta origem'
-    class_option :o, banner: 'OUT', default: 'out', desc: 'Pasta destino'
+    class_option :d, banner: 'DIR', type: :array, desc: 'Onde procurar videos', default: ADI
+    class_option :i, banner: 'IN',  default: 'ftv', desc: 'Pasta inicial'
+    class_option :o, banner: 'OUT', default: 'out', desc: 'Pasta final'
 
     desc 'conv', 'converte videos'
-    option :t, type: :boolean, default: false, desc: 'Processa somente segundos para teste'
+    option :x, type: :boolean, default: false, desc: 'executa/mostra comando converte videos'
+    option :s, type: :numeric, default: 0, desc: 'Segundos cortados no inicio do video final 0=sem cortes'
+    option :t, type: :numeric, default: 0, desc: 'Segundos duracao video final 0=sem cortes'
+    # converte videos
     def conv
-      Dir.glob("#{fin}/*.???").sort.each do |f|
-        HRVideo.new(f).processa(options, fout)
+      # cria pasta final para videos processados
+      system("mkdir -p #{ipasta}/#{options[:o]}")
+
+      Dir.glob("#{ipasta}/*.???").sort.each do |file|
+        Video.new(file, options).processa
       end
     end
 
     desc 'test', 'testa videos'
+    # testa videos
     def test
-      Dir.glob("#{fin}/*.???").sort.each do |f|
-        HRVideo.new(f).testa(options, fout)
+      Dir.glob("#{ipasta}/*.???").sort.each do |file|
+        puts(Video.new(file, options).inout)
       end
     end
 
     default_task :test
     no_commands do
-      # @return [String] pasta absoluta origem dos videos
-      def fin
-        "#{options[:d].first}/#{options[:i]}"
-      end
-
-      # @return [String] pasta absoluta destino dos videos
-      def fout
-        "#{options[:d].first}/#{options[:o]}"
+      # @return [String] pasta absoluta inicial dos videos
+      def ipasta
+        "#{options[:d][0]}/#{options[:i]}"
       end
     end
   end
