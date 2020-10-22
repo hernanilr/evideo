@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    evideo (0.2.5)
+    evideo (0.2.6)
       thor
 
 GEM
@@ -73,6 +73,7 @@ DEPENDENCIES
   reek
   rubocop
   solargraph
+  yard
 
 BUNDLED WITH
    2.1.4

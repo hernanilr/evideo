@@ -5,19 +5,18 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'evideo/version'
 
 Gem::Specification.new do |spec|
-  spec.name                  = 'evideo'
-  spec.version               = Evideo::VERSION
-  spec.authors               = ['Hernâni Rodrigues Vaz']
-  spec.email                 = ['hernanirvaz@gmail.com']
-  spec.homepage              = 'https://github.com/hernanilr/evideo'
-  spec.license               = 'MIT'
-  spec.required_ruby_version = '~> 2.7'
-
+  spec.name        = 'evideo'
+  spec.version     = Evideo::VERSION
+  spec.authors     = ['Hernâni Rodrigues Vaz']
+  spec.email       = ['hernanirvaz@gmail.com']
+  spec.homepage    = 'https://github.com/hernanilr/evideo'
+  spec.license     = 'MIT'
   spec.summary     = 'Processa ficheiros video.'
   spec.description = "#{spec.summary} Pode alterar bitrate, framerate, height, aspect ratio e elimina metadata."
 
+  spec.required_ruby_version    = Gem::Requirement.new('~> 2.7')
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['yard.run'] = 'yard'
+  spec.metadata['yard.run']     = 'yard'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been
@@ -35,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('reek')
   spec.add_development_dependency('rubocop')
   spec.add_development_dependency('solargraph')
+  spec.add_development_dependency('yard')
 
   spec.add_dependency('thor')
 end
