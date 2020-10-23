@@ -65,6 +65,7 @@ module Evideo
       "-r #{[ifps, 25.0].min} -b:v #{[ibitrate, 2000].min}k#{fdimensions}#{fratio}"
     end
 
+    # @note final video dimensions hd480=852x480, hd720=1280x720, hd1080=1920x1080
     # @return [String] dimensions do comando processar video
     def fdimensions
       if    iheight < 480  then ' -s hd480'
@@ -75,7 +76,7 @@ module Evideo
 
     # @return [String] aspect ratio do comando processar video
     def fratio
-      ART.include?(iratio) ? " -aspect 16:9 -filter:v 'pad=ih*16/9:ih:(ow-iw)/2:(oh-ih)/2'" : ''
+      ART.include?(iratio) ? " -aspect 16:9 -filter:v 'pad=max(iw\\,ih*16/9):ih:(ow-iw)/2:(oh-ih)/2'" : ''
     end
 
     # @return [String] cortes inicio video & duracao do video final processado
