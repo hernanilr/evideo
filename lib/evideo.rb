@@ -17,6 +17,9 @@ module Evideo
     class_option :i, banner: 'IN',  default: 'ftv', desc: 'Pasta inicial'
     class_option :o, banner: 'OUT', default: 'out', desc: 'Pasta final'
 
+    # TODO convert jpg -> mp4
+    #ffmpeg -pattern_type glob -r 0.15 -i '*.jpg' -c:v libx264 -pix_fmt yuv420p -s 720x480 ../../lily95.mp4
+
     desc 'conv', 'converte videos'
     option :x, type: :boolean, default: false, desc: 'executa/mostra comando converte videos'
     option :s, type: :numeric, default: 0, desc: 'Segundos cortados no inicio do video final 0=sem cortes'
