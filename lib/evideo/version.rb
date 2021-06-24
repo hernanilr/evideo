@@ -2,5 +2,5 @@
 
 # analizar/processar videos para arquivo uniformizado
 module Evideo
-  VERSION = '0.2.9'
+  VERSION = '0.3.0'
 end
