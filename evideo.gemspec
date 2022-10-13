@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.summary     = 'Processa ficheiros video.'
   spec.description = "#{spec.summary} Pode alterar bitrate, framerate, height, aspect ratio e elimina metadata."
 
-  spec.required_ruby_version    = Gem::Requirement.new('~> 2.7')
+  spec.required_ruby_version    = Gem::Requirement.new('~> 3.1')
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['yard.run']     = 'yard'
 
@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rake')
   spec.add_development_dependency('reek')
   spec.add_development_dependency('rubocop')
+  spec.add_development_dependency('rufo')
   spec.add_development_dependency('solargraph')
   spec.add_development_dependency('yard')
 
