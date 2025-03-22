@@ -50,12 +50,10 @@ module Evideo
     # @return [true, false] pastas com video final ok
     def opastas?
       ary = ops[:d]
-      if pos == ary.size then false
-      elsif ovideo?      then true
-      else
-        # proxima pasta
-        @pos += 1
-        opastas?
+      if pos == ary.size then false elsif ovideo? then true else
+                                                              # proxima pasta
+                                                              @pos += 1
+                                                              opastas?
       end
     end
 
@@ -68,9 +66,12 @@ module Evideo
     # @note final video dimensions hd480=852x480, hd720=1280x720, hd1080=1920x1080
     # @return [String] dimensions do comando processar video
     def fdimensions
-      if    iheight < 480  then ' -s hd480'
-      elsif iheight <= 720 then ' -s hd720'
-      else                      ' -s hd1080'
+      if iheight < 480
+        ' -s hd480'
+      elsif iheight <= 720
+        ' -s hd720'
+      else
+        ' -s hd1080'
       end
     end
 
@@ -96,9 +97,9 @@ module Evideo
     # @return [String] comando mpeg
     def cmd_mpeg(base)
       oout = "#{base}.out"
-      "ffmpeg -loglevel quiet -hide_banner -i #{inome} -y -an #{fparams}#{fcuts} "\
-      '-metadata title= -metadata artist= -metadata comment= -metadata major_brand= -metadata compatible_brands= '\
-      "#{base}.mp4 >#{oout} 2>&1;[ -s #{oout} ] || rm #{oout}"
+      "ffmpeg -loglevel quiet -hide_banner -i #{inome} -y -an #{fparams}#{fcuts} " \
+        '-metadata title= -metadata artist= -metadata comment= -metadata major_brand= -metadata compatible_brands= ' \
+        "#{base}.mp4 >#{oout} 2>&1;[ -s #{oout} ] || rm #{oout}"
     end
   end
 end
