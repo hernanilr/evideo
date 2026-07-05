@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Processa ficheiros video."
   spec.description = "#{spec.summary} Pode alterar bitrate, framerate, height, aspect ratio e elimina metadata."
 
-  spec.required_ruby_version = Gem::Requirement.new("~> 3.1")
+  spec.required_ruby_version = Gem::Requirement.new("~> 3.4")
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["yard.run"] = "yard"
 
